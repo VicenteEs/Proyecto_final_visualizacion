@@ -1,0 +1,21 @@
+# Archivo de configuración de Streamlit: .streamlit/config.toml
+
+[theme]
+# Tema visual claro personalizado
+base = "light"
+primaryColor = "#1e40af"       # Azul UTEM como color primario
+backgroundColor = "#ffffff"    # Fondo blanco
+secondaryBackgroundColor = "#f1f5f9"  # Fondo secundario claro para contrastes suaves
+textColor = "#111111"          # Texto negro
+font = "sans serif"            # Fuente moderna y legible
+
+[server]
+# Configuración del servidor Streamlit
+enableCORS = false             # Para permitir acceso cruzado si alojas en otro dominio
+headless = true                # Ejecutar sin navegador automáticamente abierto
+runOnSave = true               # Recargar la app automáticamente al guardar el código
+
+[client]
+# Configuración adicional del cliente (opcional)
+showErrorDetails = true        # Mostrar detalles completos de errores (útil en desarrollo)
+toolbarMode = "minimal"        # Minimiza el toolbar en modo producción

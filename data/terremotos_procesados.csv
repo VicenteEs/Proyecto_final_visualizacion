@@ -1,0 +1,16 @@
+titulo,id,nombre_completo,url,enlace_interno_reddit,subreddit,autor,puntuacion,ratio_votos_positivos,num_comentarios,fecha_creacion,flair,link_flair_text,editado,media,thumbnail,num_crossposts,comentarios,view_count,es_texto,nsfw,stickied,spoiler,locked,distinguished,texto_post,fecha_crea,hora_crea,ciudad_o_pais,magnitud,latitud,longitud,hora
+"🌎 Andreanof Islands, Aleutian Is.: Earthquake - Землетрясение (5.5 Mgqm, at 14:21 UTC)",1m1dxk5,t3_1m1dxk5,https://www.reddit.com/r/Earthquakes/comments/1m1dxk5/andreanof_islands_aleutian_is_earthquake/,/r/Earthquakes/comments/1m1dxk5/andreanof_islands_aleutian_is_earthquake/,Earthquakes,BrainstormBot,2,1.0,0,2025-07-16 14:24:06,<praw.models.reddit.submission.SubmissionFlair object at 0x71d0e3b50c50>,,1752678341.0,,self,0,<praw.models.comment_forest.CommentForest object at 0x71d0e837e0f0>,,True,False,False,False,False,,"> 🌖 Earthquake! Землетрясение! **5.4 Mb,** registered by AT,CI,EMSC, 2025-07-16 14:21:52 UTC (gibbous moon), on land, *Andreanof Islands, Aleutian Is.* (52.12, -173.37) ± 4 km, ↓68 km likely felt 280 km away (service.scedc.caltech.edu)
+
+^2025-07-16T15:05:40Z
+
+> 📈 Earthquake **5.4 Mb,** registered by 6 agencies, 2025-07-16 14:21:52 UTC (gibbous moon), on water, *Andreanof Islands, Aleutian Is.* (52.08, -173.38), ↓69 km likely felt 280 km away (earthquake.usgs.gov)
+
+^2025-07-16T14:39:20Z
+
+> 📉 Earthquake **5.1 Ml,** registered by AT,GlobalQuake, 2025-07-16 14:21:52 UTC (gibbous moon), on water, *Andreanof Islands, Aleutian Is.* (51.95, -173.27) ± 3 km, ↓17 km likely felt 180 km away (localhost:38002)
+
+^2025-07-16T14:30:32Z
+
+> 🌖 Earthquake! Землетрясение! **5.5 Mgqm,** registered by GlobalQuake, 2025-07-16 14:21:52 UTC (gibbous moon), on land, *Andreanof Islands, Aleutian Is.* (51.93, -173.33) likely felt 210 km away (localhost:38002)
+
+^2025-07-16T14:24:05Z",2025-07-16,14:21:52,Aleutian Is.,5.5,51.93,-173.33,2025-07-16 14:24:06

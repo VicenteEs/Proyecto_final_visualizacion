@@ -1,0 +1,15 @@
+# Librerías de visualización y análisis de datos
+streamlit
+pandas
+numpy
+plotly
+matplotlib
+pydeck
+
+# Librería para scraping de Reddit
+praw
+
+# Librería para inteligencia artificial de Google
+google-generativeai
+
+
