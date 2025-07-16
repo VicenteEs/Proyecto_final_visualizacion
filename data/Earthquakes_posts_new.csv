@@ -294,6 +294,21 @@ Magnitude 6.1 earthquake off the coast of Mindanao and davao,1lnad8v,t3_1lnad8v,
 > ❗ 🌎 Earthquake! Sismo! 4.8 Mgqm, registered by GlobalQuake, 2025-06-29 02:37:57 UTC (daytime) on land, *Big Pine, Inyo County, California, United States* (37.33, -117.92) likely felt 130 km away (localhost:38002)
 
 ^2025-06-29T02:38:53Z",California-Nevada Border Region,2025-06-29 02:38:53,4.8,-117.92,-117.92,2025-06-29,02:37:57
+"🌎 Fox Islands, Aleutian Islands: Earthquake - Землетрясение (5.1 Mgqm, at 06:08 UTC)",1lmfq4e,t3_1lmfq4e,https://www.reddit.com/r/Earthquakes/comments/1lmfq4e/fox_islands_aleutian_islands_earthquake/,/r/Earthquakes/comments/1lmfq4e/fox_islands_aleutian_islands_earthquake/,Earthquakes,BrainstormBot,4,0.76,0,2025-06-28 06:10:12,<praw.models.reddit.submission.SubmissionFlair object at 0x7f4917359400>,,1751092220.0,,self,0,<praw.models.comment_forest.CommentForest object at 0x7f491737ee10>,,True,False,False,False,False,,"> 📈 Earthquake **5.2 Mww,** registered by 9 agencies, 2025-06-28 06:08:19 UTC (daytime) on water, *Fox Islands, Aleutian Islands* (51.42, -168.56), ↓10 km likely felt 170 km away (earthquake.usgs.gov)
+
+^2025-06-28T06:30:20Z
+
+> 📉 Earthquake **4.8 Ml,** registered by 7 agencies, 2025-06-28 06:08:21 UTC (daytime) on water, *Fox Islands, Aleutian Islands* (51.56, -168.5), ↓33 km likely felt 160 km away (earthquake.usgs.gov)
+
+^2025-06-28T06:26:29Z
+
+> 📈 Earthquake **5.4 Mgqm,** registered by GlobalQuake, 2025-06-28 06:08:19 UTC (daytime) on water, *South Of Aleutian Islands* (50.99, -168.32) ± 4 km likely felt 190 km away (localhost:38002)
+
+^2025-06-28T06:14:00Z
+
+> 🌎 Earthquake! Землетрясение! **5.1 Mgqm,** registered by GlobalQuake, 2025-06-28 06:08:21 UTC (daytime) on land, *North Pacific* (51.71, -168.58) likely felt 160 km away (localhost:38002)
+
+^2025-06-28T06:10:10Z",North Pacific,2025-06-28 06:10:12,51.71,-168.58,0.0,2025-06-28,06:08:19
 "🌎 Tonga Islands: Earthquake (5.7 Mgqm, at 04:16 UTC)",1lmdyw4,t3_1lmdyw4,https://www.reddit.com/r/Earthquakes/comments/1lmdyw4/tonga_islands_earthquake_57_mgqm_at_0416_utc/,/r/Earthquakes/comments/1lmdyw4/tonga_islands_earthquake_57_mgqm_at_0416_utc/,Earthquakes,BrainstormBot,13,1.0,0,2025-06-28 04:23:59,<praw.models.reddit.submission.SubmissionFlair object at 0x7f4916856fc0>,Earthquake Event (M5.8),1751085442.0,,self,0,<praw.models.comment_forest.CommentForest object at 0x7f491737ec30>,,True,False,False,False,False,,"> 🌎 Earthquake! **5.8 Mb,** registered by EMSC, 2025-06-28 04:17:07 UTC (daytime) on land, *South Pacific* (-19.93, -175.95) ± 1 km likely felt 250 km away (www.seismicportal.eu)
 
 ^2025-06-28T04:37:21Z
@@ -4390,10 +4405,3 @@ Naples struck by 4.4-magnitude quake causing minor damage and light injuries,1ja
 > 🌐 Earthquake! **5.2 Mb,** registered by scevent, 2025-06-09 02:46:13 UTC (daytime) on land, *South Pacific* (-30.84, -177.7), ↓271 km likely felt 330 km away (service.geonet.org.nz)
 
 ^2025-06-09T02:52:19Z",Kermadec Islands Region,02:46:00,4.6,-29.89,-179.29,2025-06-09,02:52:24
-"🌎 Colombia: Sismo - Earthquake (5.3 Ml, at 22:43 UTC)",1l6pa7d,t3_1l6pa7d,https://www.reddit.com/r/Earthquakes/comments/1l6pa7d/colombia_sismo_earthquake_53_ml_at_2243_utc/,/r/Earthquakes/comments/1l6pa7d/colombia_sismo_earthquake_53_ml_at_2243_utc/,Earthquakes,BrainstormBot,9,1.0,0,,c,Earthquake Event (M5.3),1749425140.0,,self,0,0,,True,False,False,False,False,,"> 📉 Sismo **4.8 Mb,** registered by 4 agencies, 2025-06-08 22:43:22 UTC (twilight) on land, *Paratebueno, Cundinamarca, Colombia* (4.42, -73.13), ↓5 km likely felt 130 km away (in Villavicencio, Cumaral, Restrepo, Barranca de Upía…) by 585600 people (www.seismicportal.eu)
-
-^2025-06-08T23:25:35Z
-
-> 🏠 Sismo! Earthquake! **5.3 Ml,** registered by GFZ, 2025-06-08 22:43:23 UTC (twilight) on land, *Paratebueno, Cundinamarca, Colombia* (4.33, -73.23) likely felt 180 km away (in Villavicencio, Cumaral, Restrepo, Barranca de Upía…) by 585600 people (www.seismicportal.eu)
-
-^2025-06-08T22:52:28Z",Paratebueno,22:43:00,4.8,4.42,-73.13,2025-06-08,22:52:34
