@@ -5,7 +5,7 @@ import os
 @st.dialog("  📤 Publicar Evento Sísmico")
 def mostrar_imagen_reddit():
     """
-    Función que muestra la imagen del mapa de r/Earthquakes en una ventana modal.
+    Función que muestra la imagen de r/Earthquakes en una ventana modal.
     """
     # Estilo personalizado para agrandar el contenido del diálogo
     st.markdown("""
@@ -115,7 +115,7 @@ def sidebar_dashboard(df):
     st.sidebar.markdown("---")
     st.sidebar.markdown("### 📸 Información Adicional")
     
-    if st.sidebar.button("🗺️ Ver Mapa Reddit", use_container_width=True, key="btn_mostrar_imagen_reddit", help="Mostrar mapa del subreddit r/Earthquakes"):
+    if st.sidebar.button(" Comunidad Reddit", use_container_width=True, key="btn_mostrar_imagen_reddit", help="Mostrar subreddit r/Earthquakes"):
         mostrar_imagen_reddit()
     
     return date_range, mag_range, locations, solo_oficiales, mostrar_volcanes
