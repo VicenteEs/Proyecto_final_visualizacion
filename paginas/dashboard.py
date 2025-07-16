@@ -105,7 +105,7 @@ def show(df):
         st.markdown(f'<div class="chart-container">{title}</div>', unsafe_allow_html=True)
         map_chart = mapa(filtered, solo_oficiales=solo_oficiales, mostrar_volcanes=mostrar_volcanes)
         if map_chart:
-            st.pydeck_chart(map_chart, use_container_width=True, height=700)
+            st.pydeck_chart(map_chart, use_container_width=True, height=827)
             # El mapa solo tiene opción HTML
             create_download_section(map_chart, "Mapa Global de Terremotos", "map")
         else:
