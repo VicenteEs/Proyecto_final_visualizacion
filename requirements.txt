@@ -5,6 +5,7 @@ numpy
 plotly
 matplotlib
 pydeck
+kaleido 
 
 # Librería para scraping de Reddit
 praw
