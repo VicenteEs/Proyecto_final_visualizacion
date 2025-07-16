@@ -106,6 +106,7 @@ def show(df):
         map_chart = mapa(filtered, solo_oficiales=solo_oficiales, mostrar_volcanes=mostrar_volcanes)
         if map_chart:
             st.pydeck_chart(map_chart, use_container_width=True, height=700)
+            create_download_section(map_chart, "Mapa Global de Terremotos", "map")
         else:
             st.info("📍 Sin datos para mostrar en el mapa")
 
@@ -114,6 +115,7 @@ def show(df):
         mag_fig = distr(filtered)
         if mag_fig:
             st.plotly_chart(mag_fig, use_container_width=True, config={"displayModeBar": False})
+            create_download_section(mag_fig, "Distribución de Magnitudes", "chart")
         else:
             st.info("Sin datos de magnitud")
 
@@ -121,6 +123,7 @@ def show(df):
         loc_fig = torta(filtered)
         if loc_fig:
             st.plotly_chart(loc_fig, use_container_width=True, config={"displayModeBar": False})
+            create_download_section(loc_fig, "Top 5 Ubicaciones", "chart")
         else:
             st.info("Sin datos de ubicación")
 
@@ -130,16 +133,19 @@ def show(df):
         monthly = map_m(filtered)
         if monthly:
             st.plotly_chart(monthly, use_container_width=True, config={"displayModeBar": False})
+            create_download_section(monthly, "Tendencia Mensual", "chart")
     with col2:
         st.markdown('<div class="chart-container">📅 Tendencia Semanal</div>', unsafe_allow_html=True)
         weekly = map_s(filtered)
         if weekly:
             st.plotly_chart(weekly, use_container_width=True, config={"displayModeBar": False})
+            create_download_section(weekly, "Tendencia Semanal", "chart")
     with col3:
         st.markdown('<div class="chart-container">📅 Tendencia Horaria</div>', unsafe_allow_html=True)
         hourly = map_h(filtered)
         if hourly:
             st.plotly_chart(hourly, use_container_width=True, config={"displayModeBar": False})
+            create_download_section(hourly, "Tendencia Horaria", "chart")
 
 def show_footer():
     """
