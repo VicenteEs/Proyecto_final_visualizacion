@@ -50,28 +50,20 @@ def download_plotly_chart(fig, filename="chart", chart_type="png"):
     Args:
         fig: Figura de Plotly
         filename (str): Nombre base del archivo (sin extensión)
-        chart_type (str): Tipo de archivo ('png', 'jpg', 'pdf', 'svg', 'html')
+        chart_type (str): Tipo de archivo ('html', 'json')
     """
     if fig is None:
         st.warning("No hay datos para descargar")
         return
     
     try:
-        if chart_type in ['png', 'jpg', 'pdf', 'svg']:
-            # Para formatos de imagen
-            img_bytes = pio.to_image(fig, format=chart_type, width=1200, height=800, scale=2)
-            
-            st.download_button(
-                label=f"📥 Descargar como {chart_type.upper()}",
-                data=img_bytes,
-                file_name=f"{filename}.{chart_type}",
-                mime=f"image/{chart_type}",
-                key=f"download_{filename}_{chart_type}"
-            )
-            
-        elif chart_type == 'html':
-            # Para formato HTML interactivo
+        # Ofrecer HTML interactivo (siempre funciona sin Kaleido/Chrome)
+        if chart_type == 'html' or chart_type in ['png', 'jpg', 'pdf', 'svg']:
             html_bytes = pio.to_html(fig, include_plotlyjs='cdn').encode()
+            
+            # Si pidieron un formato de imagen, ofrecer HTML pero avisar
+            if chart_type in ['png', 'jpg', 'pdf', 'svg']:
+                st.info(f"💡 La descarga como {chart_type.upper()} no está disponible en Streamlit Cloud. Se ofrece HTML como alternativa.")
             
             st.download_button(
                 label="📥 Descargar como HTML",
@@ -79,6 +71,17 @@ def download_plotly_chart(fig, filename="chart", chart_type="png"):
                 file_name=f"{filename}.html",
                 mime="text/html",
                 key=f"download_{filename}_html"
+            )
+            
+        # Ofrecer JSON como alternativa (datos brutos para procesamiento posterior)
+        elif chart_type == 'json':
+            json_bytes = json.dumps(fig.to_dict()).encode()
+            st.download_button(
+                label="📥 Descargar como JSON",
+                data=json_bytes,
+                file_name=f"{filename}.json",
+                mime="application/json",
+                key=f"download_{filename}_json"
             )
             
     except Exception as e:
@@ -131,14 +134,12 @@ def create_download_section(fig, chart_name, chart_type="chart"):
     
     with st.expander(f"📥 Descargar {chart_name}", expanded=False):
         if chart_type == "chart":
-            col1, col2, col3 = st.columns(3)
+            col1, col2 = st.columns(2)
             
             with col1:
-                download_plotly_chart(fig, clean_name, "png")
-            with col2:
                 download_plotly_chart(fig, clean_name, "html")
-            with col3:
-                download_plotly_chart(fig, clean_name, "pdf")
+            with col2:
+                download_plotly_chart(fig, clean_name, "json")
                 
         elif chart_type == "map":
             download_pydeck_map(fig, clean_name)
