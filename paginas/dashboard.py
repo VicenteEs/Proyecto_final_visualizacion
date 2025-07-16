@@ -103,6 +103,7 @@ def show(df):
     with map_col:
         title = "🗺️ Mapa Global" + (" y Volcanes 🌋" if mostrar_volcanes else "")
         st.markdown(f'<div class="chart-container">{title}</div>', unsafe_allow_html=True)
+        filtered = filtered[filtered["magnitud"]< 15] 
         map_chart = mapa(filtered, solo_oficiales=solo_oficiales, mostrar_volcanes=mostrar_volcanes)
         if map_chart:
             st.pydeck_chart(map_chart, use_container_width=True, height=827)
