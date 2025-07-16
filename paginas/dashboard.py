@@ -1,199 +1,145 @@
 import os
-import streamlit as st
 import pandas as pd
-from graficos import *
-from paginas.sidebar import *
-from paginas.utils import *
-from scraping import *
-from procesado import *
-from paginas.styles import *
+import streamlit as st
+import plotly.io as pio
+import json
+import base64
+from io import BytesIO
 
-def show(df):
+@st.cache_data
+def load_data():
     """
-    Función principal del dashboard que muestra la interfaz completa con métricas,
-    filtros y visualizaciones de datos sísmicos en tiempo real.
+    Función que carga y procesa los datos de terremotos desde un archivo CSV.
+    Realiza limpieza de datos, conversión de tipos y filtrado de coordenadas válidas.
+    Utiliza cache de Streamlit para optimizar el rendimiento.
+    
+    Returns:
+        pandas.DataFrame: DataFrame con datos de terremotos procesados y limpios,
+                         o DataFrame vacío si hay error al cargar el archivo
+    """
+    path = os.path.join(os.getcwd(), "data", "Earthquakes_posts_new.csv")
+    try:
+        df = pd.read_csv(path)
+        df["fecha_crea"] = pd.to_datetime(df["fecha_crea"], errors="coerce", utc=True)
+        df["latitud"] = pd.to_numeric(df["latitud"].astype(str).str.replace(",", "."), errors="coerce")
+        df["longitud"] = pd.to_numeric(df["longitud"].astype(str).str.replace(",", "."), errors="coerce")
+        df["magnitud"] = pd.to_numeric(df["magnitud"], errors="coerce")  # Asegurar que magnitud sea numérica
+        df = df.dropna(subset=["latitud", "longitud", "magnitud"])
+        df = df[(df["latitud"] >= -90) & (df["latitud"] <= 90)]
+        df = df[(df["longitud"] >= -180) & (df["longitud"] <= 180)]
+        # Aplicar filtros de magnitud consistentes con procesado.py
+        df = df[(df["magnitud"] > 1) & (df["magnitud"] < 15)]
+        return df
+    except FileNotFoundError:
+        st.error("Archivo CSV no encontrado.")
+        return pd.DataFrame()
+
+def clear_sidebar():
+    """
+    Función auxiliar que limpia el contenido del sidebar almacenado en el session_state.
+    Útil para resetear el estado del sidebar cuando se cambia de página.
+    """
+    if hasattr(st.session_state, 'sidebar_content'):
+        del st.session_state.sidebar_content
+
+
+def download_plotly_chart(fig, filename="chart", chart_type="png"):
+    """
+    Función para crear un botón de descarga para gráficos de Plotly.
     
     Args:
-        df (pandas.DataFrame): DataFrame con datos de terremotos
+        fig: Figura de Plotly
+        filename (str): Nombre base del archivo (sin extensión)
+        chart_type (str): Tipo de archivo ('html', 'json')
     """
-    inject_css()
-    hide_streamlit_header()
+    if fig is None:
+        st.warning("No hay datos para descargar")
+        return
+    
+    try:
+        # Ofrecer HTML interactivo (siempre funciona sin Kaleido/Chrome)
+        if chart_type == 'html' or chart_type in ['png', 'jpg', 'pdf', 'svg']:
+            html_bytes = pio.to_html(fig, include_plotlyjs='cdn').encode()
+            
+            # Si pidieron un formato de imagen, ofrecer HTML pero avisar
+            if chart_type in ['png', 'jpg', 'pdf', 'svg']:
+                st.info(f"💡 La descarga como {chart_type.upper()} no está disponible en Streamlit Cloud. Se ofrece HTML como alternativa.")
+            
+            st.download_button(
+                label="📥 Descargar como HTML",
+                data=html_bytes,
+                file_name=f"{filename}.html",
+                mime="text/html",
+                key=f"download_{filename}_html"
+            )
+            
+        # Ofrecer JSON como alternativa (datos brutos para procesamiento posterior)
+        elif chart_type == 'json':
+            json_bytes = json.dumps(fig.to_dict()).encode()
+            st.download_button(
+                label="📥 Descargar como JSON",
+                data=json_bytes,
+                file_name=f"{filename}.json",
+                mime="application/json",
+                key=f"download_{filename}_json"
+            )
+            
+    except Exception as e:
+        st.error(f"Error al generar la descarga: {str(e)}")
 
-    col_logo, col_title, col_btn = st.columns([1, 4, 1])  # Header con logo, título y botón
-    with col_logo:
-        logo_path = os.path.join(os.getcwd(), "data", "logocolor.png")
-        if os.path.exists(logo_path):
-            st.image(logo_path, width=100)
 
-    with col_title:
-        st.markdown('<h1 class="main-title">🌍 Dashboard de Terremotos</h1>', unsafe_allow_html=True)
-        st.markdown('<p class="subtitle">Análisis en tiempo real • Universidad Tecnológica Metropolitana</p>', unsafe_allow_html=True)
-
-    with col_btn:
-        if st.button("🔄 Actualizar datos", key="data-testid"):
-            with st.spinner("Actualizando datos..."):
-                obtener_datos("Earthquakes", 10)  # cambiar a 15
-                df_actualizado = procesar_y_limpiar_datos() 
-                st.session_state.data = df_actualizado
-                st.session_state.data_loaded = True
-                st.balloons()
-                st.success("Datos actualizados correctamente 🎉")
-                st.rerun()
-
-    df = st.session_state.get("data", df)  # Usar datos actualizados o originales
-
-    if df.empty:
-        st.warning("⚠️ No hay datos disponibles.")
-        st.stop()
-
-    # Asegurar que fecha_crea esté en formato datetime
-    if "fecha_crea" in df.columns:
-        df["fecha_crea"] = pd.to_datetime(df["fecha_crea"], errors="coerce", utc=True)
-
-    if "hora_crea" in df.columns and df["hora_crea"].notna().any():  # Procesar 'hora_crea' solo si existe y tiene datos no nulos
-        df["hora_crea"] = df["hora_crea"].apply(lambda x: x.strip() if isinstance(x, str) else x)  # Limpiar espacios solo en strings
-        df["hora_crea"] = pd.to_datetime(df["hora_crea"], format="%H:%M:%S", errors="coerce").dt.time  # Convertir a datetime.time
-    else:
-        df["hora_crea"] = pd.NaT
-
-    def combinar_fecha_hora(row):  # Función para combinar fecha y hora en un solo timestamp
-        if pd.isna(row["fecha_crea"]):
-            return pd.NaT
-        if pd.isna(row["hora_crea"]):
-            return row["fecha_crea"]  # Retornar el timestamp completo
-        # Convertir fecha_crea a date para combine
-        fecha_date = row["fecha_crea"].date()
-        return pd.Timestamp.combine(fecha_date, row["hora_crea"]).tz_localize('UTC')
-
-    df["fecha_hora"] = df.apply(combinar_fecha_hora, axis=1)
-
-    date_range, mag_range, selected_locations, solo_oficiales, mostrar_volcanes = sidebar_dashboard(df)  # Sidebar filtros
-
-    filtered = df.copy()  # Aplicar filtros
-
-    if len(date_range) == 2:  # Filtrar por rango de fechas usando solo fecha_crea
-        # Convertir date objects a datetime con UTC para compatibilidad
-        start = pd.Timestamp(date_range[0], tz='UTC')
-        end = pd.Timestamp(date_range[1], tz='UTC') + pd.Timedelta(days=1)
-
-        filtered = filtered[(filtered["fecha_crea"] >= start) & (filtered["fecha_crea"] < end)]
-
-    filtered = filtered[(filtered["magnitud"] >= mag_range[0]) & (filtered["magnitud"] <= mag_range[1])]  # Filtrar por magnitud
-
-    if selected_locations:  # Filtrar por ubicaciones
-        filtered = filtered[filtered["ciudad_o_pais"].isin(selected_locations)]
-
-    if solo_oficiales and "autor" in filtered.columns:  # Filtrar solo oficiales (BrainstormBot) si aplica
-        filtered = filtered[filtered["autor"] == "BrainstormBot"]
-
-    col1, col2, col3, col4 = st.columns(4)  # Métricas
-    with col1:
-        st.markdown(f'<div class="metric-card"><div class="metric-label">Total Terremotos</div><div class="metric-value">{len(filtered):,}</div></div>', unsafe_allow_html=True)
-    with col2:
-        avg_mag = filtered['magnitud'].mean() if not filtered.empty else 0.0
-        st.markdown(f'<div class="metric-card"><div class="metric-label">Magnitud Promedio</div><div class="metric-value">{avg_mag:.1f}</div></div>', unsafe_allow_html=True)
-    with col3:
-        max_mag = filtered['magnitud'].max() if not filtered.empty else 0.0
-        st.markdown(f'<div class="metric-card"><div class="metric-label">Magnitud Máxima</div><div class="metric-value">{max_mag:.1f}</div></div>', unsafe_allow_html=True)
-    with col4:
-        top_location = filtered["ciudad_o_pais"].value_counts().index[0] if not filtered.empty and len(filtered["ciudad_o_pais"].value_counts()) > 0 else "N/A"
-        st.markdown(f'<div class="metric-card"><div class="metric-label">Ubicación Más Activa</div><div class="metric-value">{top_location}</div></div>', unsafe_allow_html=True)
-
-    map_col, dist_col = st.columns([2, 1])  # Gráficos
-    with map_col:
-        title = "🗺️ Mapa Global" + (" y Volcanes 🌋" if mostrar_volcanes else "")
-        st.markdown(f'<div class="chart-container">{title}</div>', unsafe_allow_html=True)
-        map_chart = mapa(filtered, solo_oficiales=solo_oficiales, mostrar_volcanes=mostrar_volcanes)
-        if map_chart:
-            st.pydeck_chart(map_chart, use_container_width=True, height=700)
-            create_download_section(map_chart, "Mapa Global de Terremotos", "map")
-        else:
-            st.info("📍 Sin datos para mostrar en el mapa")
-
-    with dist_col:
-        st.markdown('<div class="chart-container">📊 Distribución de Magnitudes</div>', unsafe_allow_html=True)
-        mag_fig = distr(filtered)
-        if mag_fig:
-            st.plotly_chart(mag_fig, use_container_width=True, config={"displayModeBar": False})
-            create_download_section(mag_fig, "Distribución de Magnitudes", "chart")
-        else:
-            st.info("Sin datos de magnitud")
-
-        st.markdown('<div class="chart-container">📍 Top 5 Ubicaciones</div>', unsafe_allow_html=True)
-        loc_fig = torta(filtered)
-        if loc_fig:
-            st.plotly_chart(loc_fig, use_container_width=True, config={"displayModeBar": False})
-            create_download_section(loc_fig, "Top 5 Ubicaciones", "chart")
-        else:
-            st.info("Sin datos de ubicación")
-
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.markdown('<div class="chart-container">📅 Tendencia Mensual</div>', unsafe_allow_html=True)
-        monthly = map_m(filtered)
-        if monthly:
-            st.plotly_chart(monthly, use_container_width=True, config={"displayModeBar": False})
-            create_download_section(monthly, "Tendencia Mensual", "chart")
-    with col2:
-        st.markdown('<div class="chart-container">📅 Tendencia Semanal</div>', unsafe_allow_html=True)
-        weekly = map_s(filtered)
-        if weekly:
-            st.plotly_chart(weekly, use_container_width=True, config={"displayModeBar": False})
-            create_download_section(weekly, "Tendencia Semanal", "chart")
-    with col3:
-        st.markdown('<div class="chart-container">📅 Tendencia Horaria</div>', unsafe_allow_html=True)
-        hourly = map_h(filtered)
-        if hourly:
-            st.plotly_chart(hourly, use_container_width=True, config={"displayModeBar": False})
-            create_download_section(hourly, "Tendencia Horaria", "chart")
-
-def show_footer():
+def download_pydeck_map(deck_obj, filename="mapa"):
     """
-    Función que muestra el footer fijo en la parte inferior de la página
-    con información de la universidad, creadores y versión del proyecto.
+    Función para crear un botón de descarga para mapas de PyDeck.
+    Genera un archivo HTML con el mapa interactivo.
+    
+    Args:
+        deck_obj: Objeto PyDeck Deck
+        filename (str): Nombre base del archivo
     """
-    st.markdown("""
-    <style>
-    .footer {
-        position: fixed;
-        left: 0;
-        bottom: 0;
-        width: 100%;
-        background: linear-gradient(90deg, #1e3c72, #2a5298, #4CAF50);
-        color: white;
-        text-align: center;
-        padding: 15px;
-        font-size: 14px;
-        z-index: 10000;
-    }
-    .footer-content {
-        display: flex;
-        justify-content: space-around;
-        font-size: 16px;
-        align-items: center;
-        flex-wrap: wrap;
-    }
-    .footer-item {
-        margin: 0 10px;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+    if deck_obj is None:
+        st.warning("No hay mapa para descargar")
+        return
+    
+    try:
+        # Convertir el mapa a HTML
+        html_content = deck_obj.to_html(as_string=True)
+        
+        st.download_button(
+            label="📥 Descargar Mapa como HTML",
+            data=html_content.encode(),
+            file_name=f"{filename}.html",
+            mime="text/html",
+            key=f"download_{filename}_map"
+        )
+        
+    except Exception as e:
+        st.error(f"Error al generar la descarga del mapa: {str(e)}")
 
-    footer_html = f"""
-    <div class="footer">
-        <div class="footer-content">
-            <div class="footer-item">
-                <strong>🏫 Universidad Tecnológica Metropolitana</strong> | Proyecto de Visualización y Análisis de Datos Sísmicos
-            </div>
-            <div class="footer-item">
-                <strong>👥 Creadores:</strong> David Sepúlveda & Vicente Escudero
-            </div>
-            <div class="footer-item">
-                Versión: 999.1
-            </div>
-        </div>
-    </div>
+
+def create_download_section(fig, chart_name, chart_type="chart"):
     """
-
-    st.markdown(footer_html, unsafe_allow_html=True)
-    st.markdown("<br><br><br><br><br>", unsafe_allow_html=True)
+    Crea una sección completa de descarga con múltiples formatos.
+    
+    Args:
+        fig: Figura de Plotly o objeto PyDeck
+        chart_name (str): Nombre descriptivo del gráfico
+        chart_type (str): Tipo de gráfico ('chart' para Plotly, 'map' para PyDeck)
+    """
+    if fig is None:
+        return
+    
+    # Crear un nombre de archivo limpio
+    clean_name = chart_name.lower().replace(" ", "_").replace("á", "a").replace("é", "e").replace("í", "i").replace("ó", "o").replace("ú", "u")
+    
+    with st.expander(f"📥 Descargar {chart_name}", expanded=False):
+        if chart_type == "chart":
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                download_plotly_chart(fig, clean_name, "html")
+            with col2:
+                download_plotly_chart(fig, clean_name, "json")
+                
+        elif chart_type == "map":
+            download_pydeck_map(fig, clean_name)
