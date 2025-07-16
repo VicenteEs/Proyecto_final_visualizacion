@@ -28,6 +28,10 @@ def inject_css():
             button[data-testid="stButton"]:hover {
                 background-color: #059669 !important; /* verde oscuro */
             }
+        section.main > div:first-child {
+        padding-top: 0rem !important;
+        margin-top: 0rem !important;
+        }
 
         .main .block-container {  /* Estilos generales */
             padding-top: 0.1rem;
@@ -206,8 +210,15 @@ def hide_streamlit_header():
     """
     st.markdown("""
         <style>
-            header.stAppHeader {
-                display: none !important;
-            }
+            /* Ocultar espacio superior */
+        .block-container {
+            padding-top: 1rem !important;
+        }
+
+        /* También puedes ajustar márgenes globales si hace falta */
+        header {
+            visibility: hidden;
+        }
         </style>
     """, unsafe_allow_html=True)
+
