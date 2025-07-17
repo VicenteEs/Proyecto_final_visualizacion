@@ -98,8 +98,8 @@ El proyecto implementa el **ciclo completo de los datos** en el contexto de aná
 ### **Paso 1: 📥 Clonar o Descargar el Proyecto**
 
 ```bash
-# Opción A: Clonar repositorio (si está en Git)
-git clone <URL_DEL_REPOSITORIO>
+# Opción A: Clonar repositorio
+git clone https://github.com/VicenteEs/Proyecto_final_visualizacion
 cd Proyecto_final_visualizacion
 
 ```
