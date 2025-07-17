@@ -34,7 +34,7 @@ def show(df):
             with st.spinner("Actualizando datos..."):
                 obtener_datos("Earthquakes", 10)  # cambiar a 15
                 df_actualizado = procesar_y_limpiar_datos() 
-                st.session_state.data = df_actualizado
+                st.session_state.data =  load_data()
                 st.session_state.data_loaded = True
                 st.balloons()
                 st.success("Datos actualizados correctamente 🎉")
